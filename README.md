@@ -16,7 +16,8 @@ which provides information on product categories, brands, prices, ratings, and m
     
     - Are there categories where being a best-seller is more prevalent? 
     	
-    	*Hint: one option is to calculate the proportion of best-sellers for each category and then sort the categories based on this proportion in descending order.*
+    	*Hint: one option is to calcul
+        zate the proportion of best-sellers for each category and then sort the categories based on this proportion in descending order.*
 
 
 2. **Statistical Tests**:
