@@ -1,5 +1,6 @@
 ## Lab - EDA Bivariate Analysis: Diving into Amazon UK Product Insights Part II
 
+
 **Objective**: Delve into the dynamics of product pricing on Amazon UK to uncover insights that can inform business strategies and decision-making.
 
 **Dataset**: This lab utilizes the [Amazon UK product dataset](https://www.kaggle.com/datasets/asaniczka/uk-optimal-product-price-prediction/)
