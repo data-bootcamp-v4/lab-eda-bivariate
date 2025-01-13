@@ -73,3 +73,91 @@ which provides information on product categories, brands, prices, ratings, and m
 
 - Do the same analysis without taking out the outliers. What are your insights?
 
+###Solution
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import chi2_contingency, pearsonr, probplot
+from sklearn.preprocessing import LabelEncoder
+
+# Load dataset
+data = pd.read_csv('amazon_uk_product_dataset.csv')  # Replace with actual file path
+
+# Part 1: Analyzing Best-Seller Trends Across Product Categories
+
+# 1. Crosstab Analysis
+crosstab = pd.crosstab(data['category'], data['isBestSeller'])
+crosstab_prop = crosstab.div(crosstab.sum(axis=1), axis=0)
+crosstab_prop_sorted = crosstab_prop.sort_values(by=1, ascending=False)
+print(crosstab_prop_sorted)
+
+# 2. Chi-square Test
+chi2, p, dof, ex = chi2_contingency(crosstab)
+print(f"Chi-square Statistic: {chi2}, p-value: {p}")
+
+# Cramér's V
+n = crosstab.sum().sum()
+cramers_v = np.sqrt(chi2 / (n * (min(crosstab.shape) - 1)))
+print(f"Cramér's V: {cramers_v}")
+
+# 3. Stacked Bar Chart
+crosstab.plot(kind='bar', stacked=True, figsize=(10, 6))
+plt.title('Best-Seller Distribution Across Categories')
+plt.xlabel('Category')
+plt.ylabel('Count')
+plt.legend(title='Is Best Seller')
+plt.tight_layout()
+plt.show()
+
+# Part 2: Exploring Product Prices and Ratings Across Categories and Brands
+
+# 0. Remove Outliers in Product Prices
+Q1 = data['price'].quantile(0.25)
+Q3 = data['price'].quantile(0.75)
+IQR = Q3 - Q1
+filtered_data = data[(data['price'] >= Q1 - 1.5 * IQR) & (data['price'] <= Q3 + 1.5 * IQR)]
+
+# 1. Violin Plot
+top_20_categories = filtered_data['category'].value_counts().nlargest(20).index
+sns.violinplot(x='category', y='price', data=filtered_data[filtered_data['category'].isin(top_20_categories)])
+plt.xticks(rotation=90)
+plt.title('Price Distribution Across Top 20 Categories')
+plt.show()
+
+# 2. Bar Chart for Average Price
+avg_price = filtered_data.groupby('category')['price'].mean().nlargest(10)
+avg_price.plot(kind='bar', figsize=(10, 6))
+plt.title('Average Price of Top 10 Categories')
+plt.xlabel('Category')
+plt.ylabel('Average Price')
+plt.show()
+
+# 3. Box Plot for Ratings
+sns.boxplot(x='category', y='stars', data=filtered_data[filtered_data['category'].isin(top_20_categories)])
+plt.xticks(rotation=90)
+plt.title('Ratings Distribution Across Top 10 Categories')
+plt.show()
+
+# Part 3: Investigating the Interplay Between Product Prices and Ratings
+
+# 1. Correlation Coefficient
+corr, _ = pearsonr(filtered_data['price'], filtered_data['stars'])
+print(f"Correlation between Price and Stars: {corr}")
+
+# 2. Scatter Plot
+sns.scatterplot(x='stars', y='price', data=filtered_data)
+plt.title('Price vs. Rating')
+plt.xlabel('Rating')
+plt.ylabel('Price')
+plt.show()
+
+# Correlation Heatmap
+sns.heatmap(filtered_data.corr(), annot=True, cmap='coolwarm')
+plt.title('Correlation Heatmap')
+plt.show()
+
+# QQ Plot for Price Distribution
+probplot(filtered_data['price'], dist="norm", plot=plt)
+plt.title('QQ Plot for Price Distribution')
+plt.show()
