@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.pyo
+.vscode/
+.history/
+amz_uk_price_prediction_dataset.csv
