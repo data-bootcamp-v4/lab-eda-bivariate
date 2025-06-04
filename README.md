@@ -2,7 +2,7 @@
 
 **Objective**: Delve into the dynamics of product pricing on Amazon UK to uncover insights that can inform business strategies and decision-making.
 
-**Dataset**: This lab utilizes the [Amazon UK product dataset](https://www.kaggle.com/datasets/asaniczka/uk-optimal-product-price-prediction/)
+**Dataset**: This lab utilizes the [Amazon UK product dataset](/)
 which provides information on product categories, brands, prices, ratings, and more from from Amazon UK. You'll need to download it to start working with it.
 
 ---
