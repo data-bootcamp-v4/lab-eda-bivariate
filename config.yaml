@@ -1,0 +1,6 @@
+input_data:
+  file1: "../../lab-eda-univariate/data/raw/amz_uk_price_prediction_dataset.csv"
+
+output_data:
+  file1: "../data/clean/cleaned_data_file1.csv"
+
