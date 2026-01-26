@@ -1,3 +1,5 @@
+
+
 ## Lab - EDA Bivariate Analysis: Diving into Amazon UK Product Insights Part II
 
 **Objective**: Delve into the dynamics of product pricing on Amazon UK to uncover insights that can inform business strategies and decision-making.
