@@ -24,7 +24,7 @@ which provides information on product categories, brands, prices, ratings, and m
     - Compute Cramér's V to understand the strength of association between best-seller status and category.
 
 3. **Visualizations**:
-	- Visualize the relationship between product categories and the best-seller status using a stacked bar chart.
+	- Visualize the relationship between product categories and the best-seller status using a stacked bar chart. (top 10 of proportion table)
 
 ---
 
@@ -40,7 +40,7 @@ which provides information on product categories, brands, prices, ratings, and m
 
 1. **Violin Plots**:
     - Use a violin plot to visualize the distribution of `price` across different product `categories`. Filter out the top 20 categories based on count for better visualization.
-    - Which product category tends to have the highest median price? Don't filter here by top categories.
+    - Which product category tends to have the highest median price? Don't filter here by top categories. (no visualization question, so use filter for top categories)
 
 2. **Bar Charts**:
     - Create a bar chart comparing the average price of products for the top 10 product categories (based on count).
@@ -51,6 +51,7 @@ which provides information on product categories, brands, prices, ratings, and m
     - Which category tends to receive the highest median rating from customers? Don't filter here by top categories.
 
 ---
+
 
 ### Part 3: Investigating the Interplay Between Product Prices and Ratings
 
