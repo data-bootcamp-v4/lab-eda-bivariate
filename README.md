@@ -1,75 +1,205 @@
-## Lab - EDA Bivariate Analysis: Diving into Amazon UK Product Insights Part II
+# =========================================================
+# LAB - EDA BIVARIATE ANALYSIS
+# Amazon UK Product Insights - Part II
+# Single code cell (GitHub ready)
+# =========================================================
 
-**Objective**: Delve into the dynamics of product pricing on Amazon UK to uncover insights that can inform business strategies and decision-making.
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import scipy.stats as st
 
-**Dataset**: This lab utilizes the [Amazon UK product dataset](https://www.kaggle.com/datasets/asaniczka/uk-optimal-product-price-prediction/)
-which provides information on product categories, brands, prices, ratings, and more from from Amazon UK. You'll need to download it to start working with it.
+sns.set(style="whitegrid")
 
----
+# ===============================
+# LOAD DATA
+# ===============================
+df = pd.read_csv("data/amazon_uk_products.csv")
 
-### Part 1: Analyzing Best-Seller Trends Across Product Categories
+print("Dataset shape:", df.shape)
 
-**Objective**: Understand the relationship between product categories and their best-seller status.
+# =========================================================
+# PART 1 — BEST-SELLER TRENDS
+# =========================================================
 
-1. **Crosstab Analysis**:
-    - Create a crosstab between the product `category` and the `isBestSeller` status.
-    
-    - Are there categories where being a best-seller is more prevalent? 
-    	
-    	*Hint: one option is to calculate the proportion of best-sellers for each category and then sort the categories based on this proportion in descending order.*
+print("\n=== PART 1: Best-Seller Analysis ===")
 
+# Crosstab
+crosstab = pd.crosstab(df["category"], df["isBestSeller"])
+print("\nCrosstab (head):")
+print(crosstab.head())
 
-2. **Statistical Tests**:
-    - Conduct a Chi-square test to determine if the best-seller distribution is independent of the product category.
-    - Compute Cramér's V to understand the strength of association between best-seller status and category.
+# Proportion of best-sellers
+best_seller_prop = (
+    crosstab.div(crosstab.sum(axis=1), axis=0)
+    .sort_values(by=True, ascending=False)
+)
 
-3. **Visualizations**:
-	- Visualize the relationship between product categories and the best-seller status using a stacked bar chart.
+print("\nTop categories by best-seller proportion:")
+print(best_seller_prop.head(10))
 
----
+# Chi-square test
+chi2, p_value, dof, expected = st.chi2_contingency(crosstab)
 
-### Part 2: Exploring Product Prices and Ratings Across Categories and Brands
+print(f"\nChi-square statistic: {chi2:.2f}")
+print(f"p-value: {p_value:.4f}")
 
-**Objective**: Investigate how different product categories influence product prices.
+if p_value < 0.05:
+    print("Conclusion: Best-seller status depends on product category.")
+else:
+    print("Conclusion: Best-seller status is independent of product category.")
 
-0. **Preliminary Step: Remove outliers in product prices.**
+# Cramér's V
+n = crosstab.sum().sum()
+cramers_v = np.sqrt(chi2 / (n * (min(crosstab.shape) - 1)))
+print(f"Cramér's V: {cramers_v:.3f}")
 
-	For this purpose, we can use the IQR (Interquartile Range) method. Products priced below the first quartile minus 1.5 times the IQR or above the third quartile plus 1.5 times the IQR will be considered outliers and removed from the dataset. The next steps will be done with the dataframe without outliers.
-	
-	*Hint: you can check the last Check For Understanding at the end of the lesson EDA Bivariate Analysis for a hint on how to do this.*
+# Visualization
+best_seller_prop.head(15).plot(
+    kind="bar",
+    stacked=True,
+    figsize=(12,6)
+)
+plt.title("Best-Seller Proportion by Category (Top 15)")
+plt.ylabel("Proportion")
+plt.xlabel("Category")
+plt.legend(title="Is Best Seller")
+plt.tight_layout()
+plt.show()
 
-1. **Violin Plots**:
-    - Use a violin plot to visualize the distribution of `price` across different product `categories`. Filter out the top 20 categories based on count for better visualization.
-    - Which product category tends to have the highest median price? Don't filter here by top categories.
+# =========================================================
+# PART 2 — PRICES & RATINGS
+# =========================================================
 
-2. **Bar Charts**:
-    - Create a bar chart comparing the average price of products for the top 10 product categories (based on count).
-    - Which product category commands the highest average price? Don't filter here by top categories.
+print("\n=== PART 2: Prices and Ratings ===")
 
-3. **Box Plots**:
-    - Visualize the distribution of product `ratings` based on their `category` using side-by-side box plots. Filter out the top 10 categories based on count for better visualization.
-    - Which category tends to receive the highest median rating from customers? Don't filter here by top categories.
+# Remove price outliers (IQR)
+Q1 = df["price"].quantile(0.25)
+Q3 = df["price"].quantile(0.75)
+IQR = Q3 - Q1
 
----
+df_no_outliers = df[
+    (df["price"] >= Q1 - 1.5 * IQR) &
+    (df["price"] <= Q3 + 1.5 * IQR)
+]
 
-### Part 3: Investigating the Interplay Between Product Prices and Ratings
+print("Shape after removing outliers:", df_no_outliers.shape)
 
-**Objective**: Analyze how product ratings (`stars`) correlate with product prices.
+# ----- Violin plot (Top 20 categories)
+top20_categories = (
+    df_no_outliers["category"]
+    .value_counts()
+    .head(20)
+    .index
+)
 
-1. **Correlation Coefficients**:
-    - Calculate the correlation coefficient between `price` and `stars`.
-    - Is there a significant correlation between product price and its rating?
-	
-2. **Visualizations**:
-    - Use a scatter plot to visualize the relationship between product rating and price. What patterns can you observe?
-    - Use a correlation heatmap to visualize correlations between all numerical variables.
-    - Examine if product prices typically follow a normal distribution using a QQ plot. 
+plt.figure(figsize=(14,6))
+sns.violinplot(
+    data=df_no_outliers[df_no_outliers["category"].isin(top20_categories)],
+    x="category",
+    y="price"
+)
+plt.xticks(rotation=90)
+plt.title("Price Distribution Across Top 20 Categories")
+plt.tight_layout()
+plt.show()
 
----
+# Highest median price (no filter)
+print("\nHighest median prices by category:")
+print(
+    df_no_outliers
+    .groupby("category")["price"]
+    .median()
+    .sort_values(ascending=False)
+    .head(5)
+)
 
-**Submission**: Submit a Jupyter Notebook which contains code and a business-centric report summarizing your findings. 
+# ----- Bar chart (Average price)
+top10_categories = (
+    df_no_outliers["category"]
+    .value_counts()
+    .head(10)
+    .index
+)
 
-**Bonus**: 
+avg_price = (
+    df_no_outliers[df_no_outliers["category"].isin(top10_categories)]
+    .groupby("category")["price"]
+    .mean()
+    .sort_values(ascending=False)
+)
 
-- Do the same analysis without taking out the outliers. What are your insights?
+avg_price.plot(kind="bar", figsize=(10,5))
+plt.title("Average Price by Category (Top 10)")
+plt.ylabel("Average Price")
+plt.tight_layout()
+plt.show()
 
+# ----- Box plot (Ratings)
+plt.figure(figsize=(14,6))
+sns.boxplot(
+    data=df_no_outliers[df_no_outliers["category"].isin(top10_categories)],
+    x="category",
+    y="stars"
+)
+plt.xticks(rotation=90)
+plt.title("Ratings Distribution by Category (Top 10)")
+plt.tight_layout()
+plt.show()
+
+print("\nHighest median ratings by category:")
+print(
+    df_no_outliers
+    .groupby("category")["stars"]
+    .median()
+    .sort_values(ascending=False)
+    .head(5)
+)
+
+# =========================================================
+# PART 3 — PRICE VS RATINGS
+# =========================================================
+
+print("\n=== PART 3: Price vs Ratings ===")
+
+# Correlation
+corr, corr_p = st.pearsonr(
+    df_no_outliers["price"],
+    df_no_outliers["stars"]
+)
+
+print(f"Pearson correlation: {corr:.3f}")
+print(f"p-value: {corr_p:.4f}")
+
+# Scatter plot
+plt.figure(figsize=(8,6))
+sns.scatterplot(
+    data=df_no_outliers,
+    x="stars",
+    y="price",
+    alpha=0.3
+)
+plt.title("Price vs Rating")
+plt.tight_layout()
+plt.show()
+
+# Correlation heatmap
+plt.figure(figsize=(8,6))
+sns.heatmap(
+    df_no_outliers.select_dtypes("number").corr(),
+    annot=True,
+    cmap="coolwarm",
+    fmt=".2f"
+)
+plt.title("Correlation Heatmap")
+plt.tight_layout()
+plt.show()
+
+# QQ plot (price normality)
+st.probplot(df_no_outliers["price"], plot=plt)
+plt.title("QQ Plot — Price Distribution")
+plt.tight_layout()
+plt.show()
+
+print("\n=== END OF ANALYSIS ===")
