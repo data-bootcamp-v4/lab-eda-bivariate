@@ -67,9 +67,6 @@ which provides information on product categories, brands, prices, ratings, and m
 
 ---
 
-**Submission**: Submit a Jupyter Notebook which contains code and a business-centric report summarizing your findings. 
-
 **Bonus**: 
 
-- Do the same analysis without taking out the outliers. What are your insights?
-
+- Do the same analysis without removing the outliers. What are your insights?
