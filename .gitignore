@@ -1,0 +1,11 @@
+# Archivos de sistema de macOS
+.DS_Store
+
+# Datasets y archivos pesados
+*.csv
+*.zip
+
+# Carpetas de Python (si usas Jupyter o VS Code)
+__pycache__/
+.ipynb_checkpoints/
+
