@@ -33,6 +33,7 @@ which provides information on product categories, brands, prices, ratings, and m
 **Objective**: Investigate how different product categories influence product prices.
 
 0. **Preliminary Step: Remove outliers in product prices.**
+ 
 
 	For this purpose, we can use the IQR (Interquartile Range) method. Products priced below the first quartile minus 1.5 times the IQR or above the third quartile plus 1.5 times the IQR will be considered outliers and removed from the dataset. The next steps will be done with the dataframe without outliers.
 	
@@ -72,4 +73,3 @@ which provides information on product categories, brands, prices, ratings, and m
 **Bonus**: 
 
 - Do the same analysis without taking out the outliers. What are your insights?
-
