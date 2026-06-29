@@ -55,7 +55,7 @@ which provides information on product categories, brands, prices, ratings, and m
 ### Part 3: Investigating the Interplay Between Product Prices and Ratings
 
 **Objective**: Analyze how product ratings (`stars`) correlate with product prices.
-
+V
 1. **Correlation Coefficients**:
     - Calculate the correlation coefficient between `price` and `stars`.
     - Is there a significant correlation between product price and its rating?
